@@ -1,4 +1,4 @@
--- Aimbot
+-- Aimbot ล็อคเฉพาะตัว
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -14,7 +14,7 @@ ScreenGui.ResetOnSpawn = false
 
 -- รองรับ executor / local
 pcall(function()
-	ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = game.CoreGui
 end)
 
 -- ===== CAMERA LOCK =====
@@ -22,12 +22,126 @@ local lockEnabled = false
 local connection
 
 local function getCharacter()
-	return player.Character or player.CharacterAdded:Wait()
+return player.Character or player.CharacterAdded:Wait()
 end
 
 local function getNearestTarget()
-	local char = getCharacter()
-	local root = char:WaitForChild("HumanoidRootPart")
+local char = getCharacter()
+local root = char:WaitForChild("HumanoidRootPart")
+
+local nearest, shortest = nil, math.huge  
+for _, plr in ipairs(Players:GetPlayers()) do  
+	if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
+		local dist = (plr.Character.HumanoidRootPart.Position - root.Position).Magnitude  
+		if dist < shortest then  
+			shortest = dist  
+			nearest = plr.Character.HumanoidRootPart  
+		end  
+	end  
+end  
+return nearest
+
+end
+
+local function enableLock()
+connection = RunService.RenderStepped:Connect(function()
+local target = getNearestTarget()
+if target then
+camera.CFrame = CFrame.lookAt(camera.CFrame.Position, target.Position)
+end
+end)
+end
+
+local function disableLock()
+if connection then
+connection:Disconnect()
+connection = nil
+end
+end
+
+-- ===== PRO INTRO =====
+local Title = Instance.new("TextLabel")
+Title.Parent = ScreenGui
+Title.Size = UDim2.fromScale(0.38, 0.065)
+Title.Position = UDim2.fromScale(0.31, -0.15)
+Title.BackgroundColor3 = Color3.fromRGB(12,12,12)
+Title.BackgroundTransparency = 0.15
+Title.Text = "BY XAYBCZ"
+Title.TextColor3 = Color3.fromRGB(235,235,235)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBlack
+Title.BorderSizePixel = 0
+Title.ZIndex = 20
+
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0,20)
+
+local Stroke = Instance.new("UIStroke", Title)
+Stroke.Thickness = 1.8
+Stroke.Transparency = 0.5
+
+-- Slide IN
+TweenService:Create(
+Title,
+TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+{Position = UDim2.fromScale(0.31, 0.04)}
+):Play()
+
+-- Floating
+local floatTween = TweenService:Create(
+Title,
+TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+{Position = UDim2.fromScale(0.31, 0.032)}
+)
+
+task.delay(1, function()
+floatTween:Play()
+end)
+
+-- Slide OUT หลัง 5 วิ
+task.delay(5, function()
+floatTween:Cancel()
+local out = TweenService:Create(
+Title,
+TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+{
+Position = UDim2.fromScale(0.31, -0.2),
+TextTransparency = 1,
+BackgroundTransparency = 1
+}
+)
+out:Play()
+out.Completed:Wait()
+Title:Destroy()
+end)
+
+-- ===== BUTTON LOCK =====
+local Button = Instance.new("TextButton")
+Button.Parent = ScreenGui
+Button.Size = UDim2.fromScale(0.18, 0.07)
+Button.Position = UDim2.fromScale(0.02, 0.12)
+Button.BackgroundColor3 = Color3.fromRGB(35,35,35)
+Button.TextColor3 = Color3.fromRGB(255,255,255)
+Button.TextScaled = true
+Button.Font = Enum.Font.GothamBold
+Button.Text = "LOCK : OFF"
+Button.BorderSizePixel = 0
+Button.ZIndex = 10
+
+Instance.new("UICorner", Button).CornerRadius = UDim.new(0,12)
+
+Button.MouseButton1Click:Connect(function()
+lockEnabled = not lockEnabled
+if lockEnabled then
+enableLock()
+Button.Text = "LOCK : ON"
+Button.BackgroundColor3 = Color3.fromRGB(40,120,40)
+else
+disableLock()
+Button.Text = "LOCK : OFF"
+Button.BackgroundColor3 = Color3.fromRGB(35,35,35)
+end
+end)
+ย่ออันนี้ให้หน่อย	local root = char:WaitForChild("HumanoidRootPart")
 
 	local nearest, shortest = nil, math.huge
 	for _, plr in ipairs(Players:GetPlayers()) do
