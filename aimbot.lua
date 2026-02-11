@@ -59,58 +59,38 @@ local function disableLock()
 end
 
 -- ===== PRO INTRO =====
-local Title = Instance.new("TextLabel")
-Title.Parent = ScreenGui
-Title.Size = UDim2.fromScale(0.38, 0.065)
-Title.Position = UDim2.fromScale(0.31, -0.15)
-Title.BackgroundColor3 = Color3.fromRGB(12,12,12)
-Title.BackgroundTransparency = 0.15
-Title.Text = "BY XAYBCZ"
-Title.TextColor3 = Color3.fromRGB(235,235,235)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBlack
-Title.BorderSizePixel = 0
-Title.ZIndex = 20
+local RunService = game:GetService("RunService")
 
-Instance.new("UICorner", Title).CornerRadius = UDim.new(0,20)
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.ResetOnSpawn = false
 
-local Stroke = Instance.new("UIStroke", Title)
-Stroke.Thickness = 1.8
-Stroke.Transparency = 0.5
+local text = "XAYBCZ LOCK"
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.fromScale(0.4,0.1)
+frame.Position = UDim2.fromScale(0.3,0.1)
+frame.BackgroundTransparency = 1
 
--- Slide IN
-TweenService:Create(
-	Title,
-	TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-	{Position = UDim2.fromScale(0.31, 0.04)}
-):Play()
+local letters = {}
+for i = 1, #text do
+	local lbl = Instance.new("TextLabel")
+	lbl.Parent = frame
+	lbl.Size = UDim2.fromScale(1/#text,1)
+	lbl.Position = UDim2.fromScale((i-1)/#text,0)
+	lbl.BackgroundTransparency = 1
+	lbl.Text = string.sub(text,i,i)
+	lbl.TextScaled = true
+	lbl.Font = Enum.Font.GothamBlack
+	table.insert(letters, lbl)
+end
 
--- Floating
-local floatTween = TweenService:Create(
-	Title,
-	TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-	{Position = UDim2.fromScale(0.31, 0.032)}
-)
+local hue = 0
 
-task.delay(1, function()
-	floatTween:Play()
-end)
-
--- Slide OUT หลัง 5 วิ
-task.delay(5, function()
-	floatTween:Cancel()
-	local out = TweenService:Create(
-		Title,
-		TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
-		{
-			Position = UDim2.fromScale(0.31, -0.2),
-			TextTransparency = 1,
-			BackgroundTransparency = 1
-		}
-	)
-	out:Play()
-	out.Completed:Wait()
-	Title:Destroy()
+RunService.RenderStepped:Connect(function(dt)
+	hue = (hue + dt * 0.4) % 1
+	for i, lbl in ipairs(letters) do
+		local offset = (i/#text)
+		lbl.TextColor3 = Color3.fromHSV((hue + offset) % 1, 1, 1)
+	end
 end)
 
 -- ===== BUTTON LOCK =====
