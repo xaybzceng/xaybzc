@@ -59,49 +59,52 @@ local function disableLock()
 end
 
 -- ===== PRO INTRO =====
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
 local player = Players.LocalPlayer
 
--- GUI
+-- สร้าง GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "BY XAYBZC"
+gui.Name = "XAYBCZ_RGB"
 gui.ResetOnSpawn = false
-pcall(function()
-	gui.Parent = game.CoreGui
-end)
 
--- Text
+-- รองรับทุก executor
+if syn and syn.protect_gui then
+	syn.protect_gui(gui)
+	gui.Parent = game.CoreGui
+else
+	gui.Parent = player:WaitForChild("PlayerGui")
+end
+
+-- ข้อความ
 local label = Instance.new("TextLabel")
 label.Parent = gui
-label.Size = UDim2.fromScale(0.4, 0.08)
-label.Position = UDim2.fromScale(0.3, 0.05)
+label.Size = UDim2.new(0.4,0,0.08,0)
+label.Position = UDim2.new(0.3,0,0.05,0)
 label.BackgroundTransparency = 1
 label.Text = "BY XAYBCZ"
 label.TextScaled = true
 label.Font = Enum.Font.GothamBlack
 label.TextColor3 = Color3.fromRGB(255,0,0)
-label.ZIndex = 10
 
--- Rainbow Effect
+-- RGB Effect
 task.spawn(function()
-	while label.Parent do
-		for i = 0, 1, 0.01 do
+	while label and label.Parent do
+		for i = 0,1,0.01 do
 			label.TextColor3 = Color3.fromHSV(i,1,1)
 			task.wait(0.03)
 		end
 	end
 end)
 
--- Fade Out หลัง 10 วิ
-task.delay(10, function()
-	local fade = TweenService:Create(
-		label,
-		TweenInfo.new(1),
-		{TextTransparency = 1}
-	)
-	fade:Play()
-	fade.Completed:Wait()
+-- หายไปใน 10 วิ
+task.delay(10,function()
+	local tween = TweenService:Create(label,TweenInfo.new(1),{
+		TextTransparency = 1
+	})
+	tween:Play()
+	tween.Completed:Wait()
 	gui:Destroy()
 end)
 
