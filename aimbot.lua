@@ -59,41 +59,53 @@ local function disableLock()
 end
 
 -- ===== PRO INTRO =====
-local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-local gui = Instance.new("ScreenGui", game.CoreGui)
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "BY XAYBZC"
 gui.ResetOnSpawn = false
+pcall(function()
+	gui.Parent = game.CoreGui
+end)
 
-local text = "XAYBCZ LOCK"
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.fromScale(0.4,0.1)
-frame.Position = UDim2.fromScale(0.3,0.1)
-frame.BackgroundTransparency = 1
+-- Text
+local label = Instance.new("TextLabel")
+label.Parent = gui
+label.Size = UDim2.fromScale(0.4, 0.08)
+label.Position = UDim2.fromScale(0.3, 0.05)
+label.BackgroundTransparency = 1
+label.Text = "BY XAYBCZ"
+label.TextScaled = true
+label.Font = Enum.Font.GothamBlack
+label.TextColor3 = Color3.fromRGB(255,0,0)
+label.ZIndex = 10
 
-local letters = {}
-for i = 1, #text do
-	local lbl = Instance.new("TextLabel")
-	lbl.Parent = frame
-	lbl.Size = UDim2.fromScale(1/#text,1)
-	lbl.Position = UDim2.fromScale((i-1)/#text,0)
-	lbl.BackgroundTransparency = 1
-	lbl.Text = string.sub(text,i,i)
-	lbl.TextScaled = true
-	lbl.Font = Enum.Font.GothamBlack
-	table.insert(letters, lbl)
-end
-
-local hue = 0
-
-RunService.RenderStepped:Connect(function(dt)
-	hue = (hue + dt * 0.4) % 1
-	for i, lbl in ipairs(letters) do
-		local offset = (i/#text)
-		lbl.TextColor3 = Color3.fromHSV((hue + offset) % 1, 1, 1)
+-- Rainbow Effect
+task.spawn(function()
+	while label.Parent do
+		for i = 0, 1, 0.01 do
+			label.TextColor3 = Color3.fromHSV(i,1,1)
+			task.wait(0.03)
+		end
 	end
 end)
 
--- ===== BUTTON LOCK =====
+-- Fade Out หลัง 10 วิ
+task.delay(10, function()
+	local fade = TweenService:Create(
+		label,
+		TweenInfo.new(1),
+		{TextTransparency = 1}
+	)
+	fade:Play()
+	fade.Completed:Wait()
+	gui:Destroy()
+end)
+
+     - ===== BUTTON LOCK =====
 local Button = Instance.new("TextButton")
 Button.Parent = ScreenGui
 Button.Size = UDim2.fromScale(0.18, 0.07)
